@@ -62,6 +62,17 @@ func TestNormalize(t *testing.T) {
 		"as wrongly quoted will consider comma as part of the string":      {keyType: "as", value: "['aa,'bb',cc']", want: `['aa,\'bb\',cc']`},
 		"as with weird composition inception will be quoted":               {keyType: "as", value: "[value1, ] value2]", want: `['value1', '] value2']`},
 
+		"Multi-lines as unquoted":                                         {keyType: "as", value: "aa\nbb\ncc", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as quoted":                                           {keyType: "as", value: "'aa'\n'bb'\n'cc'", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as with spaces inside":                               {keyType: "as", value: "aa   \nbb\n   cc", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as with leading and trailing brackets":               {keyType: "as", value: "[aa\nbb\ncc]", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as and single line mix, unquoted":                    {keyType: "as", value: "aa,bb\ncc", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as and single line mix, quoted":                      {keyType: "as", value: "'aa','bb'\n'cc'", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as with quoted ',' is supported":                     {keyType: "as", value: "'aa,bb'\n'cc'", want: "['aa,bb', 'cc']"},
+		"Multi-lines as with all unquoted ',' will split":                 {keyType: "as", value: "aa,bb\ncc", want: "['aa', 'bb', 'cc']"},
+		"Multi-lines as with empty lined gives empty elements":            {keyType: "as", value: "aa\n\ncc", want: "['aa', '', 'cc']"}, // FIXME: do we want that?
+		"Multi-lines as with leading or trailing empty lines are ignored": {keyType: "as", value: "\n\n\n\naa\nbb\ncc\n\n\n\n\n", want: "['aa', 'bb', 'cc']"},
+
 		// ai cases
 		"simple ai":                                   {keyType: "ai", value: "[1, 2, 3]", want: "[1, 2, 3]"},
 		"simple ai with no spaces":                    {keyType: "ai", value: "[1,2,3]", want: "[1, 2, 3]"},
@@ -70,6 +81,13 @@ func TestNormalize(t *testing.T) {
 		"ai without ending ]":                         {keyType: "ai", value: "[1,2,3", want: "[1, 2, 3]"},
 		"ai with leading and ending spaces and no []": {keyType: "ai", value: "    1,2,3   ", want: "[1, 2, 3]"},
 		"ai with leading and ending spaces and  []":   {keyType: "ai", value: "    [1,2,3]   ", want: "[1, 2, 3]"},
+
+		"Multi-lines ai":                                                  {keyType: "ai", value: "1\n2\n3", want: "[1, 2, 3]"},
+		"Multi-lines ai with spaces inside":                               {keyType: "ai", value: "1\n   2\n   3", want: "[1, 2, 3]"},
+		"Multi-lines ai with leading and trailing brackets":               {keyType: "ai", value: "[1\n2\n3]", want: "[1, 2, 3]"},
+		"Multi-lines ai with all unquoted ',' will split":                 {keyType: "ai", value: "1,2\n3", want: "[1, 2, 3]"},
+		"Multi-lines ai with empty lined gives empty elements":            {keyType: "ai", value: "1\n\n3", want: "[1, , 3]"}, // FIXME: do we want that?
+		"Multi-lines ai with leading or trailing empty lines are ignored": {keyType: "ai", value: "\n\n\n\n1\n2\n3\n\n\n\n\n", want: "[1, 2, 3]"},
 
 		// Unmanaged cases
 		"unmanaged types are returned as is": {keyType: "xxx", value: "hello [ %x bar 🤪", want: "hello [ %x bar 🤪"},

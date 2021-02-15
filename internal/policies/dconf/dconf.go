@@ -274,9 +274,10 @@ func normalizeValue(keyType, value string) string {
 	case "i":
 		return strings.ReplaceAll(strings.ReplaceAll(value, `"`, ""), "'", "")
 	case "as":
+		value = strings.Join(strings.Split(value, "\n"), ", ")
 		return quoteASVariant(value)
 	case "ai":
-		value = strings.TrimSpace(value)
+		value = strings.Join(strings.Split(value, "\n"), ", ")
 		if !strings.HasPrefix(value, "[") {
 			value = "[" + value
 		}
