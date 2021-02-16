@@ -48,8 +48,8 @@ import (
 
 	"github.com/ubuntu/adsys/internal/decorate"
 	"github.com/ubuntu/adsys/internal/i18n"
-	policiesPkg "github.com/ubuntu/adsys/internal/policies"
 	"github.com/ubuntu/adsys/internal/policies/ad/admxgen/common"
+	adconst "github.com/ubuntu/adsys/internal/policies/ad/const"
 )
 
 // expandedCategories generation
@@ -214,7 +214,7 @@ func (g generator) generateExpandedCategories(categories []category, policies []
 
 		mergedPolicies[key] = common.ExpandedPolicy{
 			// remove leading / if exists to avoid double \
-			Key:         fmt.Sprintf(`%s\%s\%s\%s`, strings.ReplaceAll(policiesPkg.KeyPrefix, "/", `\`), g.distroID, typePol, strings.ReplaceAll(strings.TrimPrefix(key, "/"), "/", `\`)),
+			Key:         fmt.Sprintf(`%s\%s\%s\%s`, strings.ReplaceAll(adconst.KeyPrefix, "/", `\`), g.distroID, typePol, strings.ReplaceAll(strings.TrimPrefix(key, "/"), "/", `\`)),
 			DisplayName: displayName,
 			ExplainText: explainText,
 			ElementType: elementType,
@@ -327,7 +327,7 @@ type policyForADMX struct {
 var re = regexp.MustCompile("[^a-zA-Z0-9]+")
 
 func (g generator) toID(prefix, s string) string {
-	s = strings.TrimPrefix(s, strings.ReplaceAll(policiesPkg.KeyPrefix, "/", `\`)+`\`+g.distroID)
+	s = strings.TrimPrefix(s, strings.ReplaceAll(adconst.KeyPrefix, "/", `\`)+`\`+g.distroID)
 	return g.distroID + re.ReplaceAllString(strings.Title(prefix)+strings.Title(s), "")
 }
 
